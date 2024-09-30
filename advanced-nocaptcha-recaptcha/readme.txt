@@ -3,7 +3,7 @@ Contributors: Melapress
 Plugin URI: https://melapress.com/wordpress-captcha/
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl.html
-Tags: recaptcha, recaptcha, hcaptcha, cloudflare turnstile, antispam protection, captcha for WooCommerce
+Tags: captcha, recaptcha, hcaptcha, cloudflare turnstile, antispam protection
 Requires at least: 5.0
 Tested up to: 6.6.2
 Stable tag: 7.5.0
@@ -117,6 +117,8 @@ Use the unique 1-click feature: simply click the "Add CAPTCHA" button in the Con
 = How can I add Captcha to WooCommerce checkout and other pages? =
 Simply select the WooCommerce page you want to add CAPTCHA to in the plugin's CAPTCHA placement settings. You can also specify where exactly you want to add the CAPTCHA test on the checkout page. Support for WooCommerce and other third party plugins is only available in CAPTCHA 4WP Premium.
 
+= How can I report security bugs? =
+Please refer to our [Melapress plugins security program](https://melapress.com/plugins-security-program/).
 
 == Screenshots ==
 

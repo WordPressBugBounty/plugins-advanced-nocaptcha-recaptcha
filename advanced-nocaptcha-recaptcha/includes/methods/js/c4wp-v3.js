@@ -172,6 +172,17 @@
 				                                    .then(data => {
 				                                        if (data['success']) {
 				                                            form.classList.add('c4wp_verified');
+
+															var existingFlag = document.getElementById('c4wp_ajax_flag');
+															if (existingFlag) {
+																existingFlag.value = data.data.token; 
+															} else {
+																const flagMarkup = '<input id="c4wp_ajax_flag" type="hidden" name="c4wp_ajax_flag" value="' + data.data.token + '">';
+																var flagMarkupDiv = document.createElement('div');
+																flagMarkupDiv.innerHTML = flagMarkup.trim();
+																form.appendChild( flagMarkupDiv );
+															}
+
 				                                            // Submit as usual.
 				                                            if (foundSubmitBtn) {
 				                                                foundSubmitBtn.click();

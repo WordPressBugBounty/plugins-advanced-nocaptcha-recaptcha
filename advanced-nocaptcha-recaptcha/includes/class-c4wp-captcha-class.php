@@ -251,7 +251,11 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 			if ( ! $verify ) {
 				wp_send_json_error();
 			} else {
-				wp_send_json_success();
+				
+				$token = wp_generate_password( 32, false, false );
+				set_transient( 'c4wp_auth_' . $token, true, 300 );
+				wp_send_json_success( array( 'token' => $token ) );
+
 			}
 		}
 
@@ -378,7 +382,19 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 					)
 					.then( data => {
 						if ( data['success'] ) {
+
 							form.classList.add( 'c4wp_verified' );
+
+							var existingFlag = document.getElementById('c4wp_ajax_flag');
+							if (existingFlag) {
+								existingFlag.value = data.data.token; 
+							} else {
+								const flagMarkup = '<input id="c4wp_ajax_flag" type="hidden" name="c4wp_ajax_flag" value="' + data.data.token + '">';
+								var flagMarkupDiv = document.createElement('div');
+								flagMarkupDiv.innerHTML = flagMarkup.trim();
+								form.appendChild( flagMarkupDiv );
+							}
+
 							// Submit as usual.
 							if ( foundSubmitBtn ) {
 								foundSubmitBtn.click();
@@ -782,7 +798,7 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 			$show_captcha = self::show_login_captcha();
 
 			// Ignore nonce check as we only use as flag.
-			if ( ! isset( $_POST['c4wp_ajax_flag'] ) ) { // phpcs:disable
+			if ( ! self::is_ajax_verified_securely() ) {
 				if ( $show_captcha && ! self::verify() ) {
 					return new \WP_Error( 'c4wp_error', self::add_error_to_mgs() );
 				}
@@ -921,7 +937,7 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 			}
 
 			// Ignore nonce check as we dont process form data.
-			if ( ! isset( $_POST['c4wp_ajax_flag'] ) ) { // phpcs:disable
+			if ( ! self::is_ajax_verified_securely() ) {
 				if ( ! self::verify() ) {
 					$errors->add( 'c4wp_error', self::add_error_to_mgs() );
 				}
@@ -942,7 +958,7 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 		public static function comment_verify_old( $commentdata ) {
 			$auto_detect = C4WP_Functions::c4wp_get_option( 'language_handling' );
 
-			if ( ! isset( $_POST['c4wp_ajax_flag'] ) ) {
+			if ( ! self::is_ajax_verified_securely() ) {
 				$verify = self::verify();
 
 				if ( class_exists( 'C4WP\\Geo_Blocking' ) && isset( $_SERVER['REMOTE_ADDR'] ) ) {
@@ -986,7 +1002,7 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 		 * @since 7.6.0
 		 */
 		public static function comment_verify( $approved ) {
-			if ( ! isset( $_POST['c4wp_ajax_flag'] ) ) {
+			if ( ! self::is_ajax_verified_securely() ) {
 				$verify = C4WP_Method_Loader::method_verify( C4WP_Method_Loader::get_currently_selected_method( true, false ), false, false );
 
 				if ( ! $verify ) {
@@ -1033,5 +1049,37 @@ if ( ! class_exists( '\C4WP\C4WP_Captcha_Class' ) ) {
 			/* @free:end */
 			return $lang;
 		}
+
+		/**
+		 * Verify an AJAX request securely.
+		 *
+		 * @return bool - Was the request valid?
+		 * 
+		 * @since 7.6.1
+		 */
+		public static function is_ajax_verified_securely() {
+
+			static $is_verified = false;
+
+			if ( $is_verified ) {
+				return true;
+			}
+			
+			if ( isset( $_POST['c4wp_ajax_flag'] ) ) {
+
+				$token = sanitize_text_field( wp_unslash( $_POST['c4wp_ajax_flag'] ) );
+				
+				if ( get_transient( 'c4wp_auth_' . $token ) ) {
+					delete_transient( 'c4wp_auth_' . $token );
+					$is_verified = true;
+					return true;
+				}
+
+			}
+
+			return false;
+
+		}
+
 	}
 }

@@ -889,6 +889,12 @@ if ( ! class_exists( '\C4WP\C4WP_Functions' ) ) {
 
 			foreach ( $wp_filter[ $action ]->callbacks as $priority => $hooks ) {
 				foreach ( $hooks as $name => $arr ) {
+
+					// if not string, continue
+					if ( ! is_string( $name ) ) {
+						continue;
+					}
+
 					if (
 						( // Cover object method callback case.
 							is_array( $arr['function'] ) &&

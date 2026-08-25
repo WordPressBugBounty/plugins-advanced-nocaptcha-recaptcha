@@ -5,8 +5,8 @@ License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl.html
 Tags: captcha, recaptcha, hcaptcha, cloudflare turnstile, antispam protection
 Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 7.6.1
+Tested up to: 7.1
+Stable tag: 7.6.2
 Requires PHP: 7.4.0
 
 Use CAPTCHA to stop spam and allow customers & users to interact with your website easily. Block fake accounts and orders. Avoid false positives.
@@ -123,6 +123,11 @@ Simply select the WooCommerce page you want to add CAPTCHA to in the plugin's CA
 8. The CAPTCHA configuration can easily be seen in the plugin's configuration page.
 
 == Changelog ==
+
+= 7.6.2 (20260825) =
+
+* **Bug fixes**
+	* Fixed a bug that caused a fatal error on the plugin's settings page when there is an admin notice with the name being an integer instead of a string
 
 = 7.6.1 (20260818) =
 
